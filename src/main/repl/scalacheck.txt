@@ -1,0 +1,167 @@
+| \_Property-based testing with ScalaCheck\s
+
+| OC Scala Meetup
+| 11 Feb 2015
+
+| Adam Rosien
+| adam@rosien.net
+| @arosien
+---
+| \_How many tests are enough?\s
+---
+| \_Examples vs. Properties\s
+
+* Magic numbers
+* Ad-hoc test fixtures
+* 1 test per variation: copy-paste disease
+---
+| \_The "Diamond Kata"\s
+
+        A
+       B B
+      C   C
+     D     D
+    E       E
+   F         F
+    E       E
+     D     D
+      C   C
+       B B
+        A
+---
+| \_org.scalacheck.Prop\s
+--
+
+val propConcatLists =
+  Prop.forAll { (l1: List[Int], l2: List[Int]) =>
+    l1.size + l2.size == (l1 ::: l2).size
+  }
+--
+
+val propSqrt =
+  Prop.forAll { (n: Int) =>
+    scala.math.sqrt(n * n) == n
+  }
+---
+| \_org.scalacheck.Prop\s
+
+val p1 = forAll(...)
+
+val p2 = forAll(...)
+
+val p3 = p1 && p2
+
+val p4 = p1 || p2
+
+val p5 = p1 == p2
+
+val p6 = all(p1, p2) // same as p1 && p2
+
+val p7 = atLeastOne(p1, p2) // same as p1 || p2
+---
+| \_org.scalacheck.Prop\s
+
+object StringSpecification extends Properties("String") {
+  import Prop.forAll
+
+  property("startsWith") = forAll { (a: String, b: String) =>
+    (a+b).startsWith(a)
+  }
+
+  property("endsWith") = forAll { (a: String, b: String) =>
+    (a+b).endsWith(b)
+  }
+
+  property("substring") = forAll { (a: String, b: String) =>
+    (a+b).substring(a.length) == b
+  }
+
+  property("substring") = forAll { (a: String, b: String, c: String) =>
+    (a+b+c).substring(a.length, a.length+b.length) == b
+  }
+}
+---
+| \_org.scalacheck.Gen\s
+--
+
+Gen.alphaStr // "abc"
+
+Gen.numStr   // "123"
+
+Gen.posNum   // 42
+
+Gen.choose(0, 9)
+
+Gen.oneOf('a', 'b', 'c')
+--
+
+Gen.frequency(
+  1 -> 'a',
+  2 -> 'b',
+  3 -> 'c')
+
+Gen.containerOf[List, Int](Gen.oneOf(1, 3, 5))
+
+Gen.containerOfN[Seq, String](8, Gen.alphaStr)
+---
+| \_org.scalacheck.Arbitrary\s
+---
+| \_Hints for property definitions\s
+
+* "different paths, same destination" - commutativity, associativity, etc.
+
+  "abc" --> "cba"
+    |         |
+    v         v
+  "123" --> "321"
+
+* "there and back again" - operations with their inverse: add/subtract, write/read, set/get
+
+  "abc" --> "cba"
+        <--
+
+* "some things never change" - invariants after transformation: map`/collection-size, `sort`/collection-contents
+
+  "abc" --> "123"
+    |         |
+    v         v
+    3    =    3
+
+* "the more things change, the more they stay the same" - idempotency, `distinct(distinct(xs)) == distinct(xs)`
+
+  "bca" --> "abc" --.
+              ^     |
+              `-----'
+
+* "solve a smaller problem first" - induction properties
+* "hard to prove, easy to verify"
+* "test oracle" - compare vs. alternate version
+---
+| \_Stateful testing\s
+---
+| \_Fancy stuff\s
+
+import shapeless.contrib.scalacheck._
+
+case class Nerb(i: Int, s: String)
+
+// Woah! No `Arbitrary` instance required!
+val propNerb =
+  Prop.forAll { (nerb: Nerb) =>
+    true
+  }
+---
+| \_Thanks!\s
+
+References:
+
+* http://www.scalacheck.org
+
+* An introduction to property-based testing
+  http://fsharpforfunandprofit.com/posts/property-based-testing
+
+* shapeless-scalacheck for automatically derived scalacheck typeclasses
+  https://github.com/typelevel/shapeless-contrib
+
+* Stateful example
+  https://github.com/rickynils/scalacheck/tree/master/examples/commands-nix
