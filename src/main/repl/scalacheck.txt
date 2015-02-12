@@ -6,14 +6,16 @@
 | Adam Rosien
 | adam@rosien.net
 | @arosien
+
+Follow along at https://github.com/arosien/oc-scala-scalacheck
 ---
 | \_How many tests are enough?\s
 ---
-| \_Examples vs. Properties\s
+| \_Examples\s
 
 * Magic numbers
 * Ad-hoc test fixtures
-* 1 test per variation: copy-paste disease
+* Copy-paste disease: 1 test per variation
 ---
 | \_The "Diamond Kata"\s
 
@@ -28,6 +30,21 @@
       C   C
        B B
         A
+---
+| \_ScalaCheck\s
+
+Separates \*invariant assertions\s
+     from \*example generation\s
+---
+| \_Installation\s
+
+In sbt, add dependency:
+
+  "org.scalacheck" %% "scalacheck" % "1.12.0"
+
+In your test file:
+
+  import org.scalacheck._
 ---
 | \_org.scalacheck.Prop\s
 --
@@ -55,7 +72,7 @@ val p4 = p1 || p2
 
 val p5 = p1 == p2
 
-val p6 = all(p1, p2) // same as p1 && p2
+val p6 = all(p1, p2)        // same as p1 && p2
 
 val p7 = atLeastOne(p1, p2) // same as p1 || p2
 ---
@@ -93,7 +110,8 @@ Gen.posNum   // 42
 Gen.choose(0, 9)
 
 Gen.oneOf('a', 'b', 'c')
---
+---
+| \_org.scalacheck.Gen\s
 
 Gen.frequency(
   1 -> 'a',
@@ -104,48 +122,67 @@ Gen.containerOf[List, Int](Gen.oneOf(1, 3, 5))
 
 Gen.containerOfN[Seq, String](8, Gen.alphaStr)
 ---
+| \_org.scalacheck.Gen\s
+
+case class Nerb(i: Int, s: String)
+
+val genNerb: Gen[Nerb] =
+  for {
+    i <- Gen.choose(1, 10)
+    s <- Gen.alphaStr
+  } yield Nerb(i, s)
+---
 | \_org.scalacheck.Arbitrary\s
 ---
 | \_Hints for property definitions\s
 
-"different paths, same destination" - commutativity, associativity, etc.
+| \*"different paths, same destination"\s
 
-  "abc" --> "cba"
-    |         |
-    v         v
-  "123" --> "321"
+commutativity, associativity, etc.
+
+        "abc" --> "cba"
+          |         |
+          v         v
+        "123" --> "321"
 ---
 | \_Hints for property definitions\s
 
-"there and back again" - operations with their inverse: add/subtract, write/read, set/get
+| \*"there and back again"\s
 
-  "abc" --> "cba"
-        <--
+operations with their inverse:
+  add/subtract, write/read, set/get
+
+          "abc" --> "cba"
+                <--
 ---
 | \_Hints for property definitions\s
 
-"some things never change" - invariants after transformation: map`/collection-size, `sort`/collection-contents
+| \*"some things never change"\s
 
-  "abc" --> "123"
-    |         |
-    v         v
-    3    =    3
+invariants after transformation:
+  map/collection-size
+  sort/collection-contents
+
+      "abc" --> "123"
+        |         |
+        v         v
+        3    =    3
 ---
 | \_Hints for property definitions\s
 
-"the more things change, the more they stay the same"
+\*"the more things change, the more they stay the same"\_
 
 idempotency, e.g. `distinct(distinct(xs)) == distinct(xs)`
 
-  "bca" --> "abc" --.
-              ^     |
-              `-----'
+              "bca" --> "abc" --.
+                          ^     |
+                          `-----'
 ---
 | \_Hints for property definitions\s
 
-* "solve a smaller problem first" - induction properties
-* "hard to prove, easy to verify"
-* "test oracle" - compare vs. alternate version
+* \*"solve a smaller problem first"\s - induction properties
+* \*"hard to prove, easy to verify"\s
+* \*"test oracle"\s - compare vs. alternate version
 ---
 | \_Stateful testing\s
 ---

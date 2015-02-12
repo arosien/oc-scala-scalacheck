@@ -58,6 +58,12 @@ package object ocscala {
 
   case class Nerb(i: Int, s: String)
 
+  val genNerb: Gen[Nerb] =
+    for {
+      i <- Gen.choose(1, 10)
+      s <- Gen.alphaStr
+    } yield Nerb(i, s)
+
   val propNerb =
     Prop.forAll { (nerb: Nerb) =>
       true
