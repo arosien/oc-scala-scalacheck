@@ -108,30 +108,40 @@ Gen.containerOfN[Seq, String](8, Gen.alphaStr)
 ---
 | \_Hints for property definitions\s
 
-* "different paths, same destination" - commutativity, associativity, etc.
+"different paths, same destination" - commutativity, associativity, etc.
 
   "abc" --> "cba"
     |         |
     v         v
   "123" --> "321"
+---
+| \_Hints for property definitions\s
 
-* "there and back again" - operations with their inverse: add/subtract, write/read, set/get
+"there and back again" - operations with their inverse: add/subtract, write/read, set/get
 
   "abc" --> "cba"
         <--
+---
+| \_Hints for property definitions\s
 
-* "some things never change" - invariants after transformation: map`/collection-size, `sort`/collection-contents
+"some things never change" - invariants after transformation: map`/collection-size, `sort`/collection-contents
 
   "abc" --> "123"
     |         |
     v         v
     3    =    3
+---
+| \_Hints for property definitions\s
 
-* "the more things change, the more they stay the same" - idempotency, `distinct(distinct(xs)) == distinct(xs)`
+"the more things change, the more they stay the same"
+
+idempotency, e.g. `distinct(distinct(xs)) == distinct(xs)`
 
   "bca" --> "abc" --.
               ^     |
               `-----'
+---
+| \_Hints for property definitions\s
 
 * "solve a smaller problem first" - induction properties
 * "hard to prove, easy to verify"
