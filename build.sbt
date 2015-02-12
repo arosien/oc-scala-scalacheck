@@ -1,5 +1,3 @@
-tutSettings
-
 scalaVersion := "2.11.4"
 
 // No "test" scoping in order to write tests in the tutorial.
