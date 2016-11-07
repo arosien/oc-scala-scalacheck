@@ -54,7 +54,7 @@ package object ocscala {
 
   ///////////
 
-  import shapeless.contrib.scalacheck._
+  import org.scalacheck.Shapeless._
 
   case class Nerb(i: Int, s: String)
 

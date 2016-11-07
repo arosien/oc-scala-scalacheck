@@ -40,7 +40,7 @@ Separates \*invariant assertions\s
 
 In sbt, add dependency:
 
-  "org.scalacheck" %% "scalacheck" % "1.12.0"
+  "org.scalacheck" %% "scalacheck" % "1.13.0"
 
 In your test file:
 
@@ -133,6 +133,8 @@ val genNerb: Gen[Nerb] =
   } yield Nerb(i, s)
 ---
 | \_org.scalacheck.Arbitrary\s
+
+import org.scalacheck.Arbitrary._
 ---
 | \_Hints for property definitions\s
 
@@ -188,7 +190,7 @@ idempotency, e.g. `distinct(distinct(xs)) == distinct(xs)`
 ---
 | \_Fancy stuff\s
 
-import shapeless.contrib.scalacheck._
+import org.scalacheck.Shapeless._
 
 case class Nerb(i: Int, s: String)
 
@@ -208,7 +210,8 @@ References:
   http://fsharpforfunandprofit.com/posts/property-based-testing
 
 * shapeless-scalacheck for automatically derived scalacheck typeclasses
-  https://github.com/typelevel/shapeless-contrib
+  https://github.com/alexarchambault/scalacheck-shapeless
 
 * Stateful example
   https://github.com/rickynils/scalacheck/tree/master/examples/commands-nix
+
